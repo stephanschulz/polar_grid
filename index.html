@@ -368,6 +368,7 @@
         const polarLinesSlider2 = document.getElementById('polarLines2');
         const curvedLinesSlider = document.getElementById('curvedLines');
         const curveSpacingBiasSlider = document.getElementById('curveSpacingBias');
+        const dotSpacingOnCurvesSlider = document.getElementById('dotSpacingOnCurves');
 
         const outerValue2 = document.getElementById('outerValue2');
         const innerValue2 = document.getElementById('innerValue2');
@@ -375,6 +376,7 @@
         const polarLinesValue2 = document.getElementById('polarLinesValue2');
         const curvedLinesValue = document.getElementById('curvedLinesValue');
         const curveSpacingBiasValue = document.getElementById('curveSpacingBiasValue');
+        const dotSpacingOnCurvesValue = document.getElementById('dotSpacingOnCurvesValue');
 
         // Option 2 State
         let outerDiameter2 = parseInt(outerDiameterSlider2.value);
@@ -383,6 +385,7 @@
         let polarLinesPerSegment2 = parseInt(polarLinesSlider2.value);
         let curvedLinesCount = parseInt(curvedLinesSlider.value);
         let curveSpacingBias = parseFloat(curveSpacingBiasSlider.value);
+        let dotSpacingOnCurves = parseInt(dotSpacingOnCurvesSlider.value);
 
         // Event listeners
         outerDiameterSlider.addEventListener('input', (e) => {
@@ -472,6 +475,12 @@
         curveSpacingBiasSlider.addEventListener('input', (e) => {
             curveSpacingBias = parseFloat(e.target.value);
             curveSpacingBiasValue.textContent = curveSpacingBias.toFixed(1);
+            draw();
+        });
+
+        dotSpacingOnCurvesSlider.addEventListener('input', (e) => {
+            dotSpacingOnCurves = parseInt(e.target.value);
+            dotSpacingOnCurvesValue.textContent = dotSpacingOnCurves;
             draw();
         });
 
@@ -614,7 +623,7 @@
             });
         }
 
-        function drawCurvedLines(centerX, centerY, innerRadius, outerRadius, polarLinePositions, curvedLinesCount, bias) {
+        function drawCurvedLines(centerX, centerY, innerRadius, outerRadius, polarLinePositions, curvedLinesCount, bias, dotSpacing) {
             if (curvedLinesCount === 0 || !polarLinePositions || polarLinePositions.length < 2) return;
 
             ctx.strokeStyle = '#9b59b6';
@@ -643,12 +652,16 @@
             radialPositions.forEach(radius => {
                 ctx.beginPath();
                 
+                // Store angles for dot placement
+                const angles = [];
+                
                 // For each polar line, calculate the point at this radius
                 polarLinePositions.forEach((line, index) => {
                     // Calculate angle of this polar line
                     const dx = line.outerX - centerX;
                     const dy = centerY - line.outerY;
                     const angle = Math.atan2(dy, dx);
+                    angles.push(angle);
                     
                     // Calculate point at this radius and angle
                     const x = centerX + radius * Math.cos(angle);
@@ -662,6 +675,34 @@
                 });
                 
                 ctx.stroke();
+
+                // Draw dots on this curved line
+                if (dotSpacing > 0 && angles.length > 0) {
+                    // Calculate arc length: radius * angle_range
+                    const startAngle = angles[0];
+                    const endAngle = angles[angles.length - 1];
+                    const angleRange = endAngle - startAngle;
+                    const arcLength = radius * angleRange;
+                    
+                    // Calculate number of dots based on arc length and spacing
+                    const numDots = Math.floor(arcLength / dotSpacing);
+                    
+                    if (numDots > 0) {
+                        ctx.fillStyle = '#2c3e50';
+                        
+                        for (let i = 1; i <= numDots; i++) {
+                            const t = i / (numDots + 1);
+                            const angle = startAngle + angleRange * t;
+                            
+                            const x = centerX + radius * Math.cos(angle);
+                            const y = centerY - radius * Math.sin(angle);
+                            
+                            ctx.beginPath();
+                            ctx.arc(x, y, 3, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                }
             });
         }
 
@@ -756,8 +797,8 @@
                 // Draw polar lines and get their positions
                 const linePositions = drawPolarLines(centerX, centerY, innerRadius, outerRadius, resolution2, polarLinesPerSegment2);
                 
-                // Draw curved lines connecting polar lines
-                drawCurvedLines(centerX, centerY, innerRadius, outerRadius, linePositions, curvedLinesCount, curveSpacingBias);
+                // Draw curved lines connecting polar lines with dots
+                drawCurvedLines(centerX, centerY, innerRadius, outerRadius, linePositions, curvedLinesCount, curveSpacingBias, dotSpacingOnCurves);
 
                 // Draw connecting lines at the ends
                 ctx.strokeStyle = '#2c3e50';
