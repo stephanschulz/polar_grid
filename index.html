@@ -670,9 +670,10 @@
         }
 
         function drawDotsOnPolarLines(linePositions, dotsPerLine, bias) {
-            if (dotsPerLine === 0 || !linePositions) return;
+            if (dotsPerLine === 0 || !linePositions) return 0;
 
             ctx.fillStyle = '#2c3e50';
+            let dotCount = 0;
 
             linePositions.forEach(line => {
                 if (dotsPerLine === 1) {
@@ -683,6 +684,7 @@
                     ctx.beginPath();
                     ctx.arc(x, y, 3, 0, Math.PI * 2);
                     ctx.fill();
+                    dotCount++;
                     return;
                 }
 
@@ -728,15 +730,19 @@
                     ctx.beginPath();
                     ctx.arc(x, y, 3, 0, Math.PI * 2);
                     ctx.fill();
+                    dotCount++;
                 });
             });
+            
+            return dotCount;
         }
 
         function drawCurvedLines(centerX, centerY, innerRadius, outerRadius, polarLinePositions, curvedLinesCount, bias, dotSpacing) {
-            if (curvedLinesCount === 0 || !polarLinePositions || polarLinePositions.length < 2) return;
+            if (curvedLinesCount === 0 || !polarLinePositions || polarLinePositions.length < 2) return 0;
 
             ctx.strokeStyle = '#9b59b6';
             ctx.lineWidth = 1.5;
+            let dotCount = 0;
 
             // Calculate radial positions for curved lines using exponential spacing
             const radialPositions = [];
@@ -809,17 +815,21 @@
                             ctx.beginPath();
                             ctx.arc(x, y, 3, 0, Math.PI * 2);
                             ctx.fill();
+                            dotCount++;
                         }
                     }
                 }
             });
+            
+            return dotCount;
         }
 
         function drawProjectedGrid(centerX, centerY, innerRadius, outerRadius, polarLinePositions, gridSquareSize) {
-            if (gridSquareSize === 0) return;
+            if (gridSquareSize === 0) return 0;
 
             ctx.strokeStyle = '#e67e22';
             ctx.lineWidth = 1;
+            let dotCount = 0;
 
             // Calculate the bounding box for the Cartesian grid
             const minX = centerX - outerRadius;
@@ -908,9 +918,12 @@
                         ctx.beginPath();
                         ctx.arc(x, y, 2.5, 0, Math.PI * 2);
                         ctx.fill();
+                        dotCount++;
                     }
                 }
             }
+            
+            return dotCount;
         }
 
         function draw() {
@@ -945,7 +958,7 @@
                 const linePositions = drawPolarLines(centerX, centerY, innerRadius, outerRadius, resolution, polarLinesPerSegment);
                 
                 // Draw dots on polar lines with spacing bias
-                drawDotsOnPolarLines(linePositions, dotsPerLine, spacingBias);
+                const dotCount = drawDotsOnPolarLines(linePositions, dotsPerLine, spacingBias);
 
                 // Draw connecting lines at the ends
                 ctx.strokeStyle = '#2c3e50';
@@ -980,7 +993,7 @@
                 
                 ctx.fillText(`Outer: ${outerDiameter}px`, centerX, centerY + 30);
                 ctx.fillText(`Inner: ${innerDiameter}px`, centerX, centerY + 50);
-                ctx.fillText(`Segments: ${resolution} | Lines/Segment: ${polarLinesPerSegment}`, centerX, centerY + 70);
+                ctx.fillText(`Segments: ${resolution} | Lines/Segment: ${polarLinesPerSegment} | Dots: ${dotCount}`, centerX, centerY + 70);
             } else if (currentOption === 2) {
                 // Option 2: Curved lines
                 const outerRadius = outerDiameter2 / 2;
@@ -1005,7 +1018,7 @@
                 const linePositions = drawPolarLines(centerX, centerY, innerRadius, outerRadius, resolution2, polarLinesPerSegment2);
                 
                 // Draw curved lines connecting polar lines with dots
-                drawCurvedLines(centerX, centerY, innerRadius, outerRadius, linePositions, curvedLinesCount, curveSpacingBias, dotSpacingOnCurves);
+                const dotCount = drawCurvedLines(centerX, centerY, innerRadius, outerRadius, linePositions, curvedLinesCount, curveSpacingBias, dotSpacingOnCurves);
 
                 // Draw connecting lines at the ends
                 ctx.strokeStyle = '#2c3e50';
@@ -1040,7 +1053,7 @@
                 
                 ctx.fillText(`Outer: ${outerDiameter2}px`, centerX, centerY + 30);
                 ctx.fillText(`Inner: ${innerDiameter2}px`, centerX, centerY + 50);
-                ctx.fillText(`Segments: ${resolution2} | Curved Lines: ${curvedLinesCount}`, centerX, centerY + 70);
+                ctx.fillText(`Segments: ${resolution2} | Curved Lines: ${curvedLinesCount} | Dots: ${dotCount}`, centerX, centerY + 70);
             } else if (currentOption === 3) {
                 // Option 3: Grid projection
                 const outerRadius = outerDiameter3 / 2;
@@ -1065,7 +1078,7 @@
                 const linePositions = drawPolarLines(centerX, centerY, innerRadius, outerRadius, resolution3, polarLinesPerSegment3);
                 
                 // Draw projected grid
-                drawProjectedGrid(centerX, centerY, innerRadius, outerRadius, linePositions, gridSquareSize);
+                const dotCount = drawProjectedGrid(centerX, centerY, innerRadius, outerRadius, linePositions, gridSquareSize);
 
                 // Draw connecting lines at the ends
                 ctx.strokeStyle = '#2c3e50';
@@ -1100,7 +1113,7 @@
                 
                 ctx.fillText(`Outer: ${outerDiameter3}px`, centerX, centerY + 30);
                 ctx.fillText(`Inner: ${innerDiameter3}px`, centerX, centerY + 50);
-                ctx.fillText(`Grid Square Size: ${gridSquareSize}px`, centerX, centerY + 70);
+                ctx.fillText(`Grid Square Size: ${gridSquareSize}px | Dots: ${dotCount}`, centerX, centerY + 70);
             }
         }
 
