@@ -179,6 +179,22 @@
                     <span class="value-display"><span id="polarLinesValue">3</span></span>
                 </div>
             </div>
+
+            <div class="control-group">
+                <label>Dots per Polar Line</label>
+                <div class="control-row">
+                    <input type="range" id="dotsPerLine" min="0" max="20" value="5" step="1">
+                    <span class="value-display"><span id="dotsPerLineValue">5</span></span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Dot Spacing Bias (Inner ↔ Outer)</label>
+                <div class="control-row">
+                    <input type="range" id="spacingBias" min="0.3" max="3" value="1" step="0.1">
+                    <span class="value-display"><span id="spacingBiasValue">1.0</span></span>
+                </div>
+            </div>
         </div>
 
         <div class="info">
@@ -195,17 +211,23 @@
         const innerDiameterSlider = document.getElementById('innerDiameter');
         const resolutionSlider = document.getElementById('resolution');
         const polarLinesSlider = document.getElementById('polarLines');
+        const dotsPerLineSlider = document.getElementById('dotsPerLine');
+        const spacingBiasSlider = document.getElementById('spacingBias');
 
         const outerValue = document.getElementById('outerValue');
         const innerValue = document.getElementById('innerValue');
         const resolutionValue = document.getElementById('resolutionValue');
         const polarLinesValue = document.getElementById('polarLinesValue');
+        const dotsPerLineValue = document.getElementById('dotsPerLineValue');
+        const spacingBiasValue = document.getElementById('spacingBiasValue');
 
         // State
         let outerDiameter = parseInt(outerDiameterSlider.value);
         let innerDiameter = parseInt(innerDiameterSlider.value);
         let resolution = parseInt(resolutionSlider.value);
         let polarLinesPerSegment = parseInt(polarLinesSlider.value);
+        let dotsPerLine = parseInt(dotsPerLineSlider.value);
+        let spacingBias = parseFloat(spacingBiasSlider.value);
 
         // Event listeners
         outerDiameterSlider.addEventListener('input', (e) => {
@@ -238,6 +260,18 @@
         polarLinesSlider.addEventListener('input', (e) => {
             polarLinesPerSegment = parseInt(e.target.value);
             polarLinesValue.textContent = polarLinesPerSegment;
+            draw();
+        });
+
+        dotsPerLineSlider.addEventListener('input', (e) => {
+            dotsPerLine = parseInt(e.target.value);
+            dotsPerLineValue.textContent = dotsPerLine;
+            draw();
+        });
+
+        spacingBiasSlider.addEventListener('input', (e) => {
+            spacingBias = parseFloat(e.target.value);
+            spacingBiasValue.textContent = spacingBias.toFixed(1);
             draw();
         });
 
@@ -294,6 +328,9 @@
             const totalLines = segments * linesPerSegment + segments + 1;
             const angleStep = Math.PI / (totalLines - 1);
 
+            // Store line positions for dot drawing
+            const linePositions = [];
+
             // Draw all polar lines at evenly spaced angles
             for (let i = 0; i < totalLines; i++) {
                 const angle = angleStep * i;
@@ -307,7 +344,34 @@
                 ctx.moveTo(innerX, innerY);
                 ctx.lineTo(outerX, outerY);
                 ctx.stroke();
+
+                linePositions.push({ innerX, innerY, outerX, outerY });
             }
+
+            return linePositions;
+        }
+
+        function drawDotsOnPolarLines(linePositions, dotsPerLine, bias) {
+            if (dotsPerLine === 0 || !linePositions) return;
+
+            ctx.fillStyle = '#2c3e50';
+
+            linePositions.forEach(line => {
+                // Calculate positions along the line with spacing bias
+                for (let i = 0; i < dotsPerLine; i++) {
+                    const tLinear = (i + 1) / (dotsPerLine + 1);
+                    // Apply power function for non-linear spacing
+                    // bias > 1: dots cluster toward outer (smaller spacing at outer)
+                    // bias < 1: dots cluster toward inner (larger spacing at outer)
+                    const t = Math.pow(tLinear, bias);
+                    const x = line.innerX + (line.outerX - line.innerX) * t;
+                    const y = line.innerY + (line.outerY - line.innerY) * t;
+
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
         }
 
         function draw() {
@@ -336,8 +400,11 @@
             drawSemiCircle(centerX, centerY, outerRadius, resolution, true, '#34495e');
             ctx.globalAlpha = 1.0;
 
-            // Draw polar lines
-            drawPolarLines(centerX, centerY, innerRadius, outerRadius, resolution, polarLinesPerSegment);
+            // Draw polar lines and get their positions
+            const linePositions = drawPolarLines(centerX, centerY, innerRadius, outerRadius, resolution, polarLinesPerSegment);
+            
+            // Draw dots on polar lines with spacing bias
+            drawDotsOnPolarLines(linePositions, dotsPerLine, spacingBias);
 
             // Draw connecting lines at the ends
             ctx.strokeStyle = '#2c3e50';
