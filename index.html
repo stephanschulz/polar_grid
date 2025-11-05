@@ -26,7 +26,7 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             max-width: 900px;
             width: 100%;
@@ -34,16 +34,16 @@
 
         h1 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 2em;
+            margin-bottom: 12px;
+            font-size: 1.8em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .canvas-wrapper {
             background: #fff;
             border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 10px;
+            margin-bottom: 12px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
@@ -56,27 +56,36 @@
 
         .controls {
             display: grid;
-            gap: 12px;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
         .control-group {
             background: rgba(255, 255, 255, 0.15);
-            padding: 12px 15px;
-            border-radius: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
             backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-group.full-width {
+            grid-column: 1 / -1;
         }
 
         .control-group label {
-            display: block;
             font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 1em;
+            font-size: 0.85em;
+            white-space: nowrap;
+            min-width: 90px;
         }
 
         .control-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            flex: 1;
         }
 
         input[type="range"] {
@@ -122,40 +131,41 @@
         }
 
         .value-display {
-            min-width: 70px;
-            text-align: right;
-            font-size: 0.95em;
+            min-width: 55px;
+            text-align: center;
+            font-size: 0.8em;
             font-weight: 600;
             background: rgba(0, 0, 0, 0.2);
-            padding: 4px 10px;
-            border-radius: 5px;
+            padding: 3px 6px;
+            border-radius: 4px;
         }
 
         .info {
             text-align: center;
-            margin-top: 12px;
-            font-size: 0.9em;
-            opacity: 0.8;
+            margin-top: 8px;
+            font-size: 0.8em;
+            opacity: 0.7;
         }
 
         .menu-bar {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 12px;
             background: rgba(255, 255, 255, 0.1);
-            padding: 10px;
+            padding: 8px;
             border-radius: 10px;
         }
 
         .menu-tab {
             flex: 1;
-            padding: 10px 20px;
+            padding: 8px 12px;
             background: rgba(255, 255, 255, 0.1);
             border: 2px solid transparent;
             border-radius: 8px;
             cursor: pointer;
             text-align: center;
             font-weight: 600;
+            font-size: 0.9em;
             transition: all 0.3s;
         }
 
@@ -195,7 +205,7 @@
         <div id="option1" class="option-content active">
         <div class="controls">
             <div class="control-group">
-                <label>Outer Diameter</label>
+                <label>Outer Ø</label>
                 <div class="control-row">
                     <input type="range" id="outerDiameter" min="100" max="500" value="500" step="10">
                     <span class="value-display"><span id="outerValue">500</span> px</span>
@@ -203,7 +213,7 @@
             </div>
 
             <div class="control-group">
-                <label>Inner Diameter</label>
+                <label>Inner Ø</label>
                 <div class="control-row">
                     <input type="range" id="innerDiameter" min="50" max="450" value="150" step="10">
                     <span class="value-display"><span id="innerValue">150</span> px</span>
@@ -211,7 +221,7 @@
             </div>
 
             <div class="control-group">
-                <label>Circle Resolution (Segments)</label>
+                <label>Segments</label>
                 <div class="control-row">
                     <input type="range" id="resolution" min="3" max="100" value="11" step="1">
                     <span class="value-display"><span id="resolutionValue">11</span></span>
@@ -219,7 +229,7 @@
             </div>
 
             <div class="control-group">
-                <label>Polar Lines per Segment</label>
+                <label>Lines/Segment</label>
                 <div class="control-row">
                     <input type="range" id="polarLines" min="0" max="10" value="3" step="1">
                     <span class="value-display"><span id="polarLinesValue">3</span></span>
@@ -227,7 +237,7 @@
             </div>
 
             <div class="control-group">
-                <label>Dots per Polar Line</label>
+                <label>Dots/Line</label>
                 <div class="control-row">
                     <input type="range" id="dotsPerLine" min="0" max="20" value="5" step="1">
                     <span class="value-display"><span id="dotsPerLineValue">5</span></span>
@@ -235,7 +245,7 @@
             </div>
 
             <div class="control-group">
-                <label>Dot Spacing Bias (Inner ↔ Outer)</label>
+                <label>Dot Bias</label>
                 <div class="control-row">
                     <input type="range" id="spacingBias" min="-2" max="2" value="0" step="0.1">
                     <span class="value-display"><span id="spacingBiasValue">0.0</span></span>
@@ -252,7 +262,7 @@
         <div id="option2" class="option-content">
         <div class="controls">
             <div class="control-group">
-                <label>Outer Diameter</label>
+                <label>Outer Ø</label>
                 <div class="control-row">
                     <input type="range" id="outerDiameter2" min="100" max="500" value="500" step="10">
                     <span class="value-display"><span id="outerValue2">500</span> px</span>
@@ -260,7 +270,7 @@
             </div>
 
             <div class="control-group">
-                <label>Inner Diameter</label>
+                <label>Inner Ø</label>
                 <div class="control-row">
                     <input type="range" id="innerDiameter2" min="50" max="450" value="150" step="10">
                     <span class="value-display"><span id="innerValue2">150</span> px</span>
@@ -268,7 +278,7 @@
             </div>
 
             <div class="control-group">
-                <label>Circle Resolution (Segments)</label>
+                <label>Segments</label>
                 <div class="control-row">
                     <input type="range" id="resolution2" min="3" max="100" value="11" step="1">
                     <span class="value-display"><span id="resolutionValue2">11</span></span>
@@ -276,7 +286,7 @@
             </div>
 
             <div class="control-group">
-                <label>Polar Lines per Segment</label>
+                <label>Lines/Segment</label>
                 <div class="control-row">
                     <input type="range" id="polarLines2" min="0" max="10" value="3" step="1">
                     <span class="value-display"><span id="polarLinesValue2">3</span></span>
@@ -284,7 +294,7 @@
             </div>
 
             <div class="control-group">
-                <label>Curved Lines Count</label>
+                <label>Curved Lines</label>
                 <div class="control-row">
                     <input type="range" id="curvedLines" min="0" max="20" value="5" step="1">
                     <span class="value-display"><span id="curvedLinesValue">5</span></span>
@@ -292,7 +302,7 @@
             </div>
 
             <div class="control-group">
-                <label>Curve Spacing Bias</label>
+                <label>Curve Bias</label>
                 <div class="control-row">
                     <input type="range" id="curveSpacingBias" min="-2" max="2" value="0" step="0.1">
                     <span class="value-display"><span id="curveSpacingBiasValue">0.0</span></span>
@@ -300,7 +310,7 @@
             </div>
 
             <div class="control-group">
-                <label>Dot Spacing on Curves</label>
+                <label>Dot Spacing</label>
                 <div class="control-row">
                     <input type="range" id="dotSpacingOnCurves" min="10" max="100" value="30" step="5">
                     <span class="value-display"><span id="dotSpacingOnCurvesValue">30</span> px</span>
@@ -317,7 +327,7 @@
         <div id="option3" class="option-content">
         <div class="controls">
             <div class="control-group">
-                <label>Outer Diameter</label>
+                <label>Outer Ø</label>
                 <div class="control-row">
                     <input type="range" id="outerDiameter3" min="100" max="500" value="500" step="10">
                     <span class="value-display"><span id="outerValue3">500</span> px</span>
@@ -325,7 +335,7 @@
             </div>
 
             <div class="control-group">
-                <label>Inner Diameter</label>
+                <label>Inner Ø</label>
                 <div class="control-row">
                     <input type="range" id="innerDiameter3" min="50" max="450" value="150" step="10">
                     <span class="value-display"><span id="innerValue3">150</span> px</span>
@@ -333,7 +343,7 @@
             </div>
 
             <div class="control-group">
-                <label>Circle Resolution (Segments)</label>
+                <label>Segments</label>
                 <div class="control-row">
                     <input type="range" id="resolution3" min="3" max="100" value="11" step="1">
                     <span class="value-display"><span id="resolutionValue3">11</span></span>
@@ -341,7 +351,7 @@
             </div>
 
             <div class="control-group">
-                <label>Polar Lines per Segment</label>
+                <label>Lines/Segment</label>
                 <div class="control-row">
                     <input type="range" id="polarLines3" min="0" max="10" value="3" step="1">
                     <span class="value-display"><span id="polarLinesValue3">3</span></span>
@@ -349,7 +359,7 @@
             </div>
 
             <div class="control-group">
-                <label>Grid Square Size</label>
+                <label>Grid Size</label>
                 <div class="control-row">
                     <input type="range" id="gridSquareSize" min="10" max="100" value="30" step="5">
                     <span class="value-display"><span id="gridSquareSizeValue">30</span> px</span>
