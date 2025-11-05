@@ -26,15 +26,15 @@
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            max-width: 1000px;
+            max-width: 900px;
             width: 100%;
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-size: 2em;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
@@ -42,8 +42,8 @@
         .canvas-wrapper {
             background: #fff;
             border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
+            padding: 15px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
@@ -56,12 +56,12 @@
 
         .controls {
             display: grid;
-            gap: 20px;
+            gap: 12px;
         }
 
         .control-group {
             background: rgba(255, 255, 255, 0.15);
-            padding: 20px;
+            padding: 12px 15px;
             border-radius: 10px;
             backdrop-filter: blur(5px);
         }
@@ -69,14 +69,14 @@
         .control-group label {
             display: block;
             font-weight: 600;
-            margin-bottom: 10px;
-            font-size: 1.1em;
+            margin-bottom: 6px;
+            font-size: 1em;
         }
 
         .control-row {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
         input[type="range"] {
@@ -122,18 +122,18 @@
         }
 
         .value-display {
-            min-width: 80px;
+            min-width: 70px;
             text-align: right;
-            font-size: 1.1em;
+            font-size: 0.95em;
             font-weight: 600;
             background: rgba(0, 0, 0, 0.2);
-            padding: 5px 15px;
+            padding: 4px 10px;
             border-radius: 5px;
         }
 
         .info {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 12px;
             font-size: 0.9em;
             opacity: 0.8;
         }
@@ -151,32 +151,32 @@
             <div class="control-group">
                 <label>Outer Diameter</label>
                 <div class="control-row">
-                    <input type="range" id="outerDiameter" min="100" max="500" value="400" step="10">
-                    <span class="value-display"><span id="outerValue">400</span> px</span>
+                    <input type="range" id="outerDiameter" min="100" max="500" value="500" step="10">
+                    <span class="value-display"><span id="outerValue">500</span> px</span>
                 </div>
             </div>
 
             <div class="control-group">
                 <label>Inner Diameter</label>
                 <div class="control-row">
-                    <input type="range" id="innerDiameter" min="50" max="450" value="300" step="10">
-                    <span class="value-display"><span id="innerValue">300</span> px</span>
+                    <input type="range" id="innerDiameter" min="50" max="450" value="150" step="10">
+                    <span class="value-display"><span id="innerValue">150</span> px</span>
                 </div>
             </div>
 
             <div class="control-group">
                 <label>Circle Resolution (Segments)</label>
                 <div class="control-row">
-                    <input type="range" id="resolution" min="3" max="100" value="50" step="1">
-                    <span class="value-display"><span id="resolutionValue">50</span></span>
+                    <input type="range" id="resolution" min="3" max="100" value="11" step="1">
+                    <span class="value-display"><span id="resolutionValue">11</span></span>
                 </div>
             </div>
 
             <div class="control-group">
                 <label>Polar Lines per Segment</label>
                 <div class="control-row">
-                    <input type="range" id="polarLines" min="0" max="10" value="2" step="1">
-                    <span class="value-display"><span id="polarLinesValue">2</span></span>
+                    <input type="range" id="polarLines" min="0" max="10" value="3" step="1">
+                    <span class="value-display"><span id="polarLinesValue">3</span></span>
                 </div>
             </div>
         </div>
@@ -290,26 +290,23 @@
             ctx.strokeStyle = '#e74c3c';
             ctx.lineWidth = 1.5;
 
-            // For each segment
-            for (let i = 0; i < segments; i++) {
-                const startAngle = Math.PI * (i / segments);
-                const endAngle = Math.PI * ((i + 1) / segments);
-                const angleStep = (endAngle - startAngle) / (linesPerSegment + 1);
+            // Calculate total number of evenly spaced lines including segment boundaries
+            const totalLines = segments * linesPerSegment + segments + 1;
+            const angleStep = Math.PI / (totalLines - 1);
 
-                // Draw evenly spaced lines within this segment
-                for (let j = 1; j <= linesPerSegment; j++) {
-                    const angle = startAngle + angleStep * j;
-                    
-                    const innerX = centerX + innerRadius * Math.cos(angle);
-                    const innerY = centerY - innerRadius * Math.sin(angle);
-                    const outerX = centerX + outerRadius * Math.cos(angle);
-                    const outerY = centerY - outerRadius * Math.sin(angle);
+            // Draw all polar lines at evenly spaced angles
+            for (let i = 0; i < totalLines; i++) {
+                const angle = angleStep * i;
+                
+                const innerX = centerX + innerRadius * Math.cos(angle);
+                const innerY = centerY - innerRadius * Math.sin(angle);
+                const outerX = centerX + outerRadius * Math.cos(angle);
+                const outerY = centerY - outerRadius * Math.sin(angle);
 
-                    ctx.beginPath();
-                    ctx.moveTo(innerX, innerY);
-                    ctx.lineTo(outerX, outerY);
-                    ctx.stroke();
-                }
+                ctx.beginPath();
+                ctx.moveTo(innerX, innerY);
+                ctx.lineTo(outerX, outerY);
+                ctx.stroke();
             }
         }
 
